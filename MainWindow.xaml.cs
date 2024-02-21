@@ -63,7 +63,7 @@ namespace Nyx_Appbar
 
         List<String> rssFeeds = new List<String>()
         {
-            "https://www.stern.de/feed/standard/alle-nachrichten/"
+            "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
         };
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -237,6 +237,7 @@ namespace Nyx_Appbar
                         try
                         {
                             String feed = new WebClient().DownloadString(url);
+                            feed=feed.Replace("&gt;", ">").Replace("&lt;", "<").Replace("&quot;", "\"").Replace("&apos;", "'");
                             feed = Encoding.UTF8.GetString(Encoding.Default.GetBytes(feed));
                             String regexTitle = "\\<title\\>(.*?)\\<\\/title\\>";
                             String regexLink = "\\<link\\>(.*?)\\<\\/link\\>";
