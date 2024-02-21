@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
@@ -53,6 +54,11 @@ namespace Nyx_Appbar
             InitializeComponent();
             MouseRightButtonDown += MainWindow_MouseRightButtonDown;
             MouseLeave += TextBlock_MouseLeave;
+
+            RegistryKey rk = Registry.CurrentUser.OpenSubKey
+            ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            rk.SetValue("Nyx Newsbar", System.Reflection.Assembly.GetEntryAssembly().Location);
+            
         }
 
         private void MainWindow_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
