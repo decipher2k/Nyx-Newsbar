@@ -1,0 +1,17 @@
+﻿<Window x:Class="Nyx_Appbar.Details"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Nyx_Appbar"
+        mc:Ignorable="d" Height="400" Width="600" WindowStyle="None" Title="" ShowInTaskbar="False" SizeToContent="Height">
+    <Grid>
+        <TextBlock Name="txtDetails"
+             Width="auto" Height="auto"
+             TextWrapping="Wrap"
+             TextAlignment="Left"
+             Foreground="White" Background="Black" 
+            >
+        </TextBlock>
+    </Grid>
+</Window>

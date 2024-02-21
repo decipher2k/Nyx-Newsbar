@@ -1,0 +1,24 @@
+﻿<Window x:Class="Nyx_Appbar.Settings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Nyx_Appbar"
+        mc:Ignorable="d"
+        Title="Settings" Height="350" Width="500" WindowStyle="ToolWindow" Background="Black" Foreground="White" ShowInTaskbar="True" WindowStartupLocation="CenterScreen" UseLayoutRounding="True" TextOptions.TextFormattingMode="Display" Icon="/341106_rss_icon.png">
+    <Grid>
+        <Label Content="Newspages:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <ListBox Name="lbData" Width="449" Margin="6,44,0,39" Background="Black" BorderThickness="1"  BorderBrush="White" Foreground="White" >
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" Foreground="White"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Orientation="Horizontal"   Height="20" Margin="19,260,0,0">
+            <TextBox Name="txtData" HorizontalAlignment="Left" Margin="3,0,-7,0"  VerticalAlignment="Top" Width="416" Background="Black" Foreground="White" BorderBrush="White"/>
+        <Button Name="bnAdd" Content="+"  Margin="0,0,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="Button_Click" Background="Black" Foreground="White" BorderBrush="White"/>
+        <Button Name="bnRemove" Content="-"  Margin="0,0,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="bnRemove_Click" Foreground="White" Background="Black" BorderBrush="White"/>
+        </StackPanel>
+    </Grid>
+</Window>
