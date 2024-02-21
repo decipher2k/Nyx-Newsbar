@@ -1,2 +1,2 @@
 # Nyx Newsbar
- A newsticker sitting top of the screen
+ A newsticker siting top of the screen
