@@ -74,6 +74,12 @@ namespace Nyx_Appbar
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            if (!(License.Status.Licensed && License.Status.License_HardwareID == License.Status.HardwareID))
+            {
+                MessageBox.Show(this, "No valid license found", "Error",MessageBoxButton.OK,MessageBoxImage.Error);
+                Process.GetCurrentProcess().Kill();
+            }
+
             var fileName = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Nyx Newsbar\\settings.conf";
             if(!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Nyx Newsbar\\"))
                 Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Nyx Newsbar\\");
