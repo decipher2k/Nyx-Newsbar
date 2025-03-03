@@ -74,12 +74,7 @@ namespace Nyx_Appbar
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!(License.Status.Licensed && License.Status.License_HardwareID == License.Status.HardwareID))
-            {
-                MessageBox.Show(this, "No valid license found", "Error",MessageBoxButton.OK,MessageBoxImage.Error);
-                Process.GetCurrentProcess().Kill();
-            }
-
+            
             var fileName = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Nyx Newsbar\\settings.conf";
             if(!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Nyx Newsbar\\"))
                 Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Nyx Newsbar\\");
@@ -97,7 +92,7 @@ namespace Nyx_Appbar
 
             Rect workspace = SystemParameters.WorkArea;
             this.Top = workspace.Top;
-            this.Left = workspace.Left;
+            this.Left =0;
             this.Width = workspace.Width;
             this.Height = 40;
             this.Background = Brushes.Black;
@@ -227,80 +222,84 @@ namespace Nyx_Appbar
             }
         }
 
-        void reloadTexts()
+  void reloadTexts()
+{
+    new System.Threading.Thread(updateTexts).Start();
+    while (true)
+    {              
+        textCanvas.Dispatcher.Invoke(() =>
         {
-            new System.Threading.Thread(updateTexts).Start();
-            while (true)
-            {              
-                textCanvas.Dispatcher.Invoke(() =>
+            if (Canvas.GetLeft(textCanvas) < 0)
+                rss1.Clear();
+            else
+                rss.Clear();
+            newRSS.Clear();
+
+            foreach (String url in rssFeeds)
+            {
+                List<String> titles = new List<String>();
+                List<String> links = new List<String>();
+                List<String> descriptions = new List<String>();
+
+                try
                 {
-                    if (Canvas.GetLeft(textCanvas) < 0)
-                        rss1.Clear();
-                    else
-                        rss.Clear();
-                    newRSS.Clear();
+                    String feed = new WebClient().DownloadString(url);
+                    feed = feed.Replace("&gt;", ">").Replace("&lt;", "<").Replace("&quot;", "\"").Replace("&apos;", "'");
+                    feed = Encoding.UTF8.GetString(Encoding.Default.GetBytes(feed));
+                    String regexTitle = "\\<title\\>(.*?)\\<\\/title\\>";
+                    String regexLink = "\\<link\\>(.*?)\\<\\/link\\>";
+                    String regexDescription = "\\<description\\>(.*?)\\<\\/description\\>";
 
-                    foreach (String url in rssFeeds)
+                    Regex rgTitle = new Regex(regexTitle);
+                    Regex rgLink = new Regex(regexLink);
+                    Regex rgDescription = new Regex(regexDescription);
+
+                    MatchCollection matchedTitle = rgTitle.Matches(feed);
+                    MatchCollection matchedLink = rgLink.Matches(feed);
+                    MatchCollection matchedDescription = rgDescription.Matches(feed);
+
+                    for (int count = 0; count < (matchedTitle.Count >= numFeeds ? numFeeds : matchedTitle.Count); count++)
                     {
-                        List<String> titles = new List<String>();
-                        List<String> links = new List<String>();
-                        List<String> descriptions = new List<String>();
+                        titles.Add(matchedTitle[count].Value);
+                    }
 
-                        try
+                    for (int count = 0; count < (matchedLink.Count >= numFeeds ? numFeeds : matchedLink.Count); count++)
+                    {
+                        links.Add(matchedLink[count].Value);
+                    }
+
+                    for (int count = 0; count < (matchedDescription.Count >= numFeeds ? numFeeds : matchedDescription.Count); count++)
+                    {
+                        descriptions.Add(matchedDescription[count].Value);
+                    }
+
+                    for (int i = 0; i < titles.Count; i++)
+                    {
+                        RSS lrss = new RSS()
                         {
-                            String feed = new WebClient().DownloadString(url);
-                            feed=feed.Replace("&gt;", ">").Replace("&lt;", "<").Replace("&quot;", "\"").Replace("&apos;", "'");
-                            feed = Encoding.UTF8.GetString(Encoding.Default.GetBytes(feed));
-                            String regexTitle = "\\<title\\>(.*?)\\<\\/title\\>";
-                            String regexLink = "\\<link\\>(.*?)\\<\\/link\\>";
-                            String regexDescription = "\\<description\\>(.*?)\\<\\/description\\>";
+                            title = titles[i].Replace("<title>", "").Replace("</title>", ""),
+                            link = links.Count > i + 1 ? links[i].Replace("<link>", "").Replace("</link>", "") : "",
+                            description = descriptions.Count > i + 1 ? descriptions[i].Replace("<description>", "").Replace("</description>", "").Replace("<![CDATA[", "").Replace("]]>", "") : ""
+                        };
 
-                            Regex rgTitle = new Regex(regexTitle);
-                            Regex rgLink = new Regex(regexLink);
-                            Regex rgDescription = new Regex(regexDescription);
-
-                            MatchCollection matchedTitle = rgTitle.Matches(feed);
-                            MatchCollection matchedLink = rgLink.Matches(feed);
-                            MatchCollection matchedDescription = rgDescription.Matches(feed);
-
-                            for (int count = 0; count < (matchedTitle.Count >= numFeeds ? numFeeds : matchedTitle.Count); count++)
-                            {
-                                titles.Add(matchedTitle[count].Value);
-                            }
-
-                            for (int count = 0; count < (matchedLink.Count >= numFeeds ? numFeeds : matchedLink.Count); count++)
-                            {
-                                links.Add(matchedLink[count].Value);
-                            }
-
-                            for (int count = 0; count < (matchedDescription.Count >= numFeeds ? numFeeds : matchedDescription.Count); count++)
-                            {
-                                descriptions.Add(matchedDescription[count].Value);
-                            }
-
-                            for (int i = 0; i < titles.Count; i++)
-                            {
-                                RSS lrss = new RSS()
-                                {
-                                    title = titles[i].Replace("<title>", "").Replace("</title>", ""),
-                                    link = links.Count > i + 1 ? links[i].Replace("<link>", "").Replace("</link>", "") : "",
-                                    description = descriptions.Count > i + 1 ? descriptions[i].Replace("<description>", "").Replace("</description>", "").Replace("<![CDATA[", "").Replace("]]>", "") : ""
-                                };
-
-                                if ((Canvas.GetLeft(textCanvas) > 0 && Canvas.GetLeft(textCanvas) > 0))
-                                {
-                                    rss1.Add(lrss);
-                                    rss.Add(lrss);
-                                }
-                                newRSS.Add(lrss);
-                            }
+                        if ((Canvas.GetLeft(textCanvas) > 0 && Canvas.GetLeft(textCanvas) > 0))
+                        {
+                            rss1.Add(lrss);
+                            rss.Add(lrss);
                         }
-                        catch { }
-                    }            
-                });
-                System.Threading.Thread.Sleep(1000*60*5);
+                        newRSS.Add(lrss);
+                    }
+                }
+                catch { }
             }
-        }
+
+            // Entferne Duplikate
+            newRSS = newRSS.GroupBy(x => x.title).Select(g => g.First()).ToList();
+        });
+        System.Threading.Thread.Sleep(1000 * 60 * 5);
+    }
+}
+
 
         private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
